@@ -4,25 +4,36 @@ from base import BaseOptimizer, OptimizationResult
 
 class NelderMead(BaseOptimizer):
     """
-
     Iterativ, aber nicht auf Basis von Punkten, sondern auf n+1 (Bei n dimensionen) Punkten
     Parameter
     ----------
-    f          : zu minimierende Funktion
-    bounds     : Suchraum, z.B. [(-5, 5), (-5, 5)]
-    multistart : ob mehrere Startpunkte genutzt werden sollen
-    n_starts   : Anzahl zufaelliger Startpunkte
-    tol        : Konvergenzschwelle
-    max_iter   : maximale Anzahl Iterationen
-    step_size  : initiale Groesse des Simplex
+    f           : zu minimierende Funktion
+    bounds      : Suchraum, z.B. [(-5, 5), (-5, 5)]
+    multistart  : ob mehrere Startpunkte genutzt werden sollen
+    n_starts    : Anzahl zufaelliger Startpunkte
+    tol         : Konvergenzschwelle
+    max_iter    : maximale Anzahl Iterationen
+    step_size   : initiale Groesse des Simplex
+    Reflexion   : Reflexionskoeffizient (default 1.0)
+    Expansion   : Expansionskoeffizient (default 2.0)
+    Kontraktion : Kontraktionskoeffizient (default 0.5)
+    Schrumpfen  : Schrumpfungskoeffizient (default 0.5)
     """
 
     name = "NelderMead"
 
     def __init__(self, f, bounds, multistart=False, n_starts=8,
-                 tol=1e-6, max_iter=1000, step_size=0.5):
+                 tol=1e-6, max_iter=1000, step_size=0.5,
+                 Reflexion=1.0,
+                 Expansion=2.0,
+                 Kontraktion=0.5,
+                 Schrumpfen=0.5):
         super().__init__(f, bounds, multistart, n_starts, tol, max_iter)
         self.step_size = step_size
+        self.Reflexion = Reflexion
+        self.Expansion = Expansion
+        self.Kontraktion = Kontraktion
+        self.Schrumpfen = Schrumpfen
 
     def _run_single(self, x0):
         x0 = np.array(x0, dtype=float)
@@ -63,12 +74,12 @@ class NelderMead(BaseOptimizer):
                 break
 
             # Reflexion
-            reflexion = schwerpunkt + 1.0 * (schwerpunkt - schlechtester)
+            reflexion = schwerpunkt + self.Reflexion * (schwerpunkt - schlechtester)
             f_reflexion = self.f(reflexion)
 
             if f_reflexion < werte[0]:
                 # Besser als bester -> Expansion
-                expansion = schwerpunkt + 2.0 * (reflexion - schwerpunkt)
+                expansion = schwerpunkt + self.Expansion * (reflexion - schwerpunkt)
                 if self.f(expansion) < f_reflexion:
                     simplex[-1] = expansion
                 else:
@@ -80,13 +91,13 @@ class NelderMead(BaseOptimizer):
 
             else:
                 # Schlechter -> Kontraktion
-                kontraktion = schwerpunkt + 0.5 * (schlechtester - schwerpunkt)
+                kontraktion = schwerpunkt + self.Kontraktion * (schlechtester - schwerpunkt)
                 if self.f(kontraktion) < werte[-1]:
                     simplex[-1] = kontraktion
                 else:
                     # Kontraktion auch schlecht -> Schrumpfung
                     for i in range(1, len(simplex)):
-                        simplex[i] = bester + 0.5 * (simplex[i] - bester)
+                        simplex[i] = bester + self.Schrumpfen * (simplex[i] - bester)
 
         return OptimizationResult(
             minimum=simplex[0],

@@ -36,9 +36,9 @@ class Visualizer:
         ax_f.set_title('Funktion & Pfad')
 
         # Pfade plotten
-        colors = ['red', 'blue', 'green', 'orange']
+        colors = [plt.cm.tab10(i / max(len(runs), 1)) for i in range(len(runs))]
         for i, (path, values, label) in enumerate(runs):
-            color = colors[i % len(colors)]
+            color = colors[i]
             px = path[:, 0]
             ax_f.scatter(px, values, color=color, s=30, zorder=3)
             ax_f.plot(px, values, color=color, lw=1, alpha=0.5)
@@ -75,9 +75,9 @@ class Visualizer:
         ax_contour.set_title('Konturplot & Pfad')
 
         # Pfade plotten
-        colors = ['red', 'blue', 'green', 'orange']
+        colors = [plt.cm.tab10(i / max(len(runs), 1)) for i in range(len(runs))]
         for i, (path, values, label) in enumerate(runs):
-            color = colors[i % len(colors)]
+            color = colors[i]
             px = path[:, 0]
             py = path[:, 1]
             ax_contour.plot(px, py, color=color, lw=1.5, alpha=0.8)
@@ -96,4 +96,51 @@ class Visualizer:
         plt.tight_layout()
         plt.show()
 
-   
+    def _plot_contour(self, runs):
+        """Nur der Konturplot ohne Konvergenzplot."""
+        lo0, hi0 = self.bounds[0]
+        lo1, hi1 = self.bounds[1]
+        xs = np.linspace(lo0, hi0, 300)
+        ys = np.linspace(lo1, hi1, 300)
+        X, Y = np.meshgrid(xs, ys)
+        Z = np.vectorize(lambda u, v: self.f(np.array([u, v])))(X, Y)
+
+        fig, ax = plt.subplots(figsize=(7, 6))
+        contour = ax.contourf(X, Y, Z, levels=50, cmap='viridis', alpha=0.7)
+        ax.contour(X, Y, Z, levels=50, colors='white', linewidths=0.3, alpha=0.4)
+        plt.colorbar(contour, ax=ax, label='f(x, y)')
+
+        colors = [plt.cm.tab10(i / max(len(runs), 1)) for i in range(len(runs))]
+        for i, (path, values, label) in enumerate(runs):
+            color = colors[i]
+            px = path[:, 0]
+            py = path[:, 1]
+            ax.plot(px, py, color=color, lw=1.5, alpha=0.8)
+            ax.scatter(px[0], py[0], color=color, s=120, marker='^', zorder=5, label=f'{label} Start')
+            ax.scatter(px[-1], py[-1], color=color, s=150, marker='*', zorder=5, label=f'{label} Ende')
+
+        ax.set_xlabel('x0')
+        ax.set_ylabel('x1')
+        ax.set_title('Konturplot & Pfad')
+        ax.legend(fontsize=8)
+        plt.tight_layout()
+        plt.show()
+
+    def _plot_convergence(self, runs):
+        """Nur der Konvergenzplot."""
+        fig, ax = plt.subplots(figsize=(7, 4))
+
+        colors = [plt.cm.tab10(i / max(len(runs), 1)) for i in range(len(runs))]
+        for i, (path, values, label) in enumerate(runs):
+            ax.plot(values, color=colors[i], lw=2, label=label)
+
+        ax.set_xlabel('Iteration')
+        ax.set_ylabel('f(x)')
+        ax.set_title('Konvergenzverlauf')
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
+
+    def _plot_pairplot(self, runs):
+        print(f"Pairplot fuer {self.ndim}D noch nicht implementiert.")
