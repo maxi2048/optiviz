@@ -49,14 +49,14 @@ METHODS = ["newton", "neldermead", "bfgs", "gradient_descent"]
 
 GENERAL_EXAMPLES = """
 Beispiele:
-  python optiviz_cli.py optimize --function sphere --method newton --x0 3,4 --plot
-  python optiviz_cli.py optimize --function himmelblau --method neldermead --x0 0,0 --plot
-  python optiviz_cli.py optimize --function rosenbrock --dim 3 --method bfgs --x0 1.2,1.2,1.2
-  python optiviz_cli.py optimize --function sphere --dim 4 --method gradient_descent --x0 4,3,2,1 --lr 0.05
-  python optiviz_cli.py optimize --expr "(x[0]-2)**2 + (x[1]+1)**2" --x0 3,4 --method newton --plot
-  python optiviz_cli.py optimize --expr "np.sin(x[0]) + x[1]**2" --x0 1,2 --method neldermead --plot
-  python optiviz_cli.py compare --function sphere --dim 2 --x0 3,4 --plot
-  python optiviz_cli.py compare --expr "(x[0]-1)**2 + (x[1]-2)**2 + (x[2]+3)**2" --x0 4,0,1 --plot
+  uv run -m optim_vizu optimize --function sphere --method newton --x0 3,4 --plot
+  uv run -m optim_vizu optimize --function himmelblau --method neldermead --x0 0,0 --plot
+  uv run -m optim_vizu optimize --function rosenbrock --dim 3 --method bfgs --x0 1.2,1.2,1.2
+  uv run -m optim_vizu optimize --function sphere --dim 4 --method gradient_descent --x0 4,3,2,1 --lr 0.05
+  uv run -m optim_vizu optimize --expr "(x[0]-2)**2 + (x[1]+1)**2" --x0 3,4 --method newton --plot
+  uv run -m optim_vizu optimize --expr "np.sin(x[0]) + x[1]**2" --x0 1,2 --method neldermead --plot
+  uv run -m optim_vizu compare --function sphere --dim 2 --x0 3,4 --plot
+  uv run -m optim_vizu compare --expr "(x[0]-1)**2 + (x[1]-2)**2 + (x[2]+3)**2" --x0 4,0,1 --plot
 
 Eingabeformate:
   --x0 "3,4"
@@ -71,7 +71,6 @@ Eingabeformate:
   --expr "(x[0]-2)**2 + (x[1]+1)**2"
   --expr "np.sin(x[0]) + x[1]**2"
 """
-
 
 # ============================================================
 # Eigener Parser: bei Fehler immer Usage + Beispiele

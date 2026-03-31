@@ -22,6 +22,8 @@ Außerdem kann man aber auch die Algorithmen gegeneinander antreten lassen
 
 Im Projektordner:
 
+git clone https://github.com/maxi2048/optim_vizu.git
+cd optiviz
 uv pip install -e .
 
 ---
